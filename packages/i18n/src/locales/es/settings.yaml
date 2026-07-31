@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: Soporte Limitado
         callout_indextts2_unavailable: El soporte para IndexTTS2 no está disponible en este momento. Por favor, utilice IndexTTS.
+      gpt-sovits:
+        title: GPT-SoVITS (Local)
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: Puente conectado
+          ready: '{count} perfil(es) de voz disponible(s).'
+          offline_title: Puente desconectado
+          offline: No se puede acceder al puente TTS de AIRI. Inícielo y asegúrese de que GPT-SoVITS api_v2 esté ejecutándose en 127.0.0.1:9880.
+          no_voices_title: Sin perfiles de voz
+          no_voices: El puente está en ejecución pero aún no tiene perfiles de voz. Añada uno a voices.yaml con un clip de referencia de 3-10 segundos y su transcripción exacta.
+        fields:
+          field:
+            api-key:
+              placeholder: No es necesario para el puente local
+            text-lang:
+              label: Idioma del texto
+              description: Idioma del texto que se sintetiza. Use auto para conversaciones multilingües.
+            strip-narration:
+              label: Eliminar narración de rol
+              description: Elimina *acciones* y [acotaciones] antes de la síntesis.
+            top-k:
+              label: Top K
+              description: Limita el muestreo a los K tokens más probables. Menor es más estable.
+            top-p:
+              label: Top P
+              description: Umbral de muestreo por núcleo. Menor es más estable.
+            temperature:
+              label: Temperatura
+              description: Aleatoriedad del muestreo. Menor es más consistente, mayor es más expresivo.
+            text-split-method:
+              label: Método de división de texto
+              description: Cómo divide el puente las entradas largas. Auto mantiene sin dividir los fragmentos cortos.
+            repetition-penalty:
+              label: Penalización por repetición
+              description: Desalienta los tokens repetidos. Auméntela si el habla se entrecorta o se repite.
+            sample-steps:
+              label: Pasos de muestreo
+              description: Pasos de difusión para modelos v3/v4. Más pasos es más lento pero más limpio.
+            seed:
+              label: Semilla
+              description: Semilla fija para resultados reproducibles. -1 elige una semilla aleatoria cada vez.
+        playground:
+          default-text: ¡Hola! Esta es una prueba de la canalización local de GPT-SoVITS.
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

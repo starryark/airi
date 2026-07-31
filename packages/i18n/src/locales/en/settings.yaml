@@ -1319,6 +1319,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: Limited Support
         callout_indextts2_unavailable: Support for IndexTTS2 is currently unavailable. Please use IndexTTS.
+      gpt-sovits:
+        title: GPT-SoVITS (Local)
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: Bridge Connected
+          ready: '{count} voice profile(s) available.'
+          offline_title: Bridge Offline
+          offline: The AIRI TTS bridge is not reachable. Start it, then make sure GPT-SoVITS api_v2 is running on 127.0.0.1:9880.
+          no_voices_title: No Voice Profiles
+          no_voices: The bridge is running but has no voice profiles yet. Add one to voices.yaml with a 3-10 second reference clip and its exact transcript.
+        fields:
+          field:
+            api-key:
+              placeholder: Not required for the local bridge
+            text-lang:
+              label: Text Language
+              description: Language of the text being synthesized. Use auto for mixed-language chat.
+            strip-narration:
+              label: Strip Roleplay Narration
+              description: Remove *actions* and [stage directions] before synthesis.
+            top-k:
+              label: Top K
+              description: Limits sampling to the K most likely tokens. Lower is steadier.
+            top-p:
+              label: Top P
+              description: Nucleus sampling threshold. Lower is steadier.
+            temperature:
+              label: Temperature
+              description: Sampling randomness. Lower is more consistent, higher is more expressive.
+            text-split-method:
+              label: Text Split Method
+              description: How the bridge splits long input. Auto keeps short chat fragments unsplit.
+            repetition-penalty:
+              label: Repetition Penalty
+              description: Discourages repeated tokens. Raise if speech stutters or loops.
+            sample-steps:
+              label: Sample Steps
+              description: Diffusion steps for v3/v4 models. More steps is slower but cleaner.
+            seed:
+              label: Seed
+              description: Fixed seed for reproducible output. -1 picks a random seed each time.
+        playground:
+          default-text: Hello! This is a test of the local GPT-SoVITS pipeline.
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

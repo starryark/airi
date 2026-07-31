@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: Ограниченная поддержка
         callout_indextts2_unavailable: Поддержка IndexTTS2 в настоящее время недоступна. Пожалуйста, используйте IndexTTS.
+      gpt-sovits:
+        title: GPT-SoVITS (локально)
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: Мост подключён
+          ready: 'Доступно голосовых профилей: {count}.'
+          offline_title: Мост недоступен
+          offline: TTS-мост AIRI недоступен. Запустите его и убедитесь, что GPT-SoVITS api_v2 работает на 127.0.0.1:9880.
+          no_voices_title: Нет голосовых профилей
+          no_voices: Мост запущен, но голосовых профилей пока нет. Добавьте профиль в voices.yaml с эталонным фрагментом на 3-10 секунд и его точной расшифровкой.
+        fields:
+          field:
+            api-key:
+              placeholder: Не требуется для локального моста
+            text-lang:
+              label: Язык текста
+              description: Язык синтезируемого текста. Для многоязычного общения используйте auto.
+            strip-narration:
+              label: Удалять ролевые ремарки
+              description: Убирает *действия* и [ремарки] перед синтезом.
+            top-k:
+              label: Top K
+              description: Ограничивает выборку K наиболее вероятными токенами. Меньше — стабильнее.
+            top-p:
+              label: Top P
+              description: Порог ядерной выборки. Меньше — стабильнее.
+            temperature:
+              label: Температура
+              description: Случайность выборки. Ниже — стабильнее, выше — выразительнее.
+            text-split-method:
+              label: Метод разбиения текста
+              description: Как мост делит длинный ввод. Auto не делит короткие фрагменты диалога.
+            repetition-penalty:
+              label: Штраф за повторы
+              description: Подавляет повторяющиеся токены. Повысьте, если речь заикается или зацикливается.
+            sample-steps:
+              label: Шаги сэмплирования
+              description: Шаги диффузии для моделей v3/v4. Больше шагов — медленнее, но чище.
+            seed:
+              label: Сид
+              description: Фиксированный сид для воспроизводимого результата. -1 выбирает случайный каждый раз.
+        playground:
+          default-text: Привет! Это тест локального конвейера GPT-SoVITS.
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili/IndexTTS
         callout_indextts2_unavailable_title: 限定的なサポート
         callout_indextts2_unavailable: 現在、IndexTTS2のサポートはご利用いただけません。IndexTTSをご利用ください。
+      gpt-sovits:
+        title: GPT-SoVITS（ローカル）
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: ブリッジ接続済み
+          ready: '{count} 件の音声プロファイルが利用可能です。'
+          offline_title: ブリッジオフライン
+          offline: AIRI TTS ブリッジに接続できません。ブリッジを起動し、GPT-SoVITS api_v2 が 127.0.0.1:9880 で動作していることを確認してください。
+          no_voices_title: 音声プロファイルなし
+          no_voices: ブリッジは動作していますが、音声プロファイルがまだありません。3〜10 秒の参照音声とその正確な書き起こしを voices.yaml に追加してください。
+        fields:
+          field:
+            api-key:
+              placeholder: ローカルブリッジでは不要です
+            text-lang:
+              label: テキスト言語
+              description: 合成するテキストの言語です。多言語混在の会話では auto を使用してください。
+            strip-narration:
+              label: ロールプレイのナレーションを除去
+              description: 合成前に *動作* や [ト書き] を取り除きます。
+            top-k:
+              label: Top K
+              description: 確率上位 K 個のトークンに絞って抽出します。小さいほど安定します。
+            top-p:
+              label: Top P
+              description: 核サンプリングのしきい値です。小さいほど安定します。
+            temperature:
+              label: 温度
+              description: 抽出のランダム性です。低いほど一貫し、高いほど表情豊かになります。
+            text-split-method:
+              label: テキスト分割方式
+              description: 長い入力の分割方法です。auto では短い会話断片を分割しません。
+            repetition-penalty:
+              label: 繰り返しペナルティ
+              description: 同じトークンの繰り返しを抑制します。音声がどもる・ループする場合は上げてください。
+            sample-steps:
+              label: サンプリングステップ
+              description: v3/v4 モデルの拡散ステップ数です。多いほど低速ですがきれいになります。
+            seed:
+              label: シード
+              description: 再現可能な出力のための固定シードです。-1 は毎回ランダムに選びます。
+        playground:
+          default-text: こんにちは！ローカル GPT-SoVITS パイプラインのテストです。
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

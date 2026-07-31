@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: 有限支援
         callout_indextts2_unavailable: IndexTTS2 目前尚未支援，請改用 IndexTTS。
+      gpt-sovits:
+        title: GPT-SoVITS（本機）
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: 橋接已連線
+          ready: '有 {count} 個可用語音設定檔。'
+          offline_title: 橋接離線
+          offline: 無法連線 AIRI TTS 橋接。請先啟動它，並確認 GPT-SoVITS api_v2 正在 127.0.0.1:9880 上執行。
+          no_voices_title: 沒有語音設定檔
+          no_voices: 橋接已執行，但尚未有語音設定檔。請在 voices.yaml 中新增一筆，包含 3-10 秒的參考音訊及其精確文字。
+        fields:
+          field:
+            api-key:
+              placeholder: 本機橋接無需填寫
+            text-lang:
+              label: 文字語言
+              description: 要合成的文字語言。多語言混合對話請使用 auto。
+            strip-narration:
+              label: 移除角色扮演旁白
+              description: 合成前移除 *動作* 與 [舞台提示]。
+            top-k:
+              label: Top K
+              description: 僅在機率最高的 K 個詞元中取樣。數值越小越穩定。
+            top-p:
+              label: Top P
+              description: 核取樣閾值。數值越小越穩定。
+            temperature:
+              label: 溫度
+              description: 取樣隨機性。越低越穩定，越高越有表現力。
+            text-split-method:
+              label: 文字切分方式
+              description: 橋接如何切分長文字。auto 會保持簡短對話片段不被切分。
+            repetition-penalty:
+              label: 重複懲罰
+              description: 抑制重複詞元。若語音卡頓或循環，可調高該值。
+            sample-steps:
+              label: 取樣步數
+              description: v3/v4 模型的擴散步數。步數越多越慢但更乾淨。
+            seed:
+              label: 隨機種子
+              description: 用於可重現輸出的固定種子。-1 表示每次隨機。
+        playground:
+          default-text: 你好！這是本機 GPT-SoVITS 流程的測試。
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

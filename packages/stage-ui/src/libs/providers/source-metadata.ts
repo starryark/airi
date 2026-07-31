@@ -60,6 +60,7 @@ const providerSourceMetadataById = {
   'featherless-ai': paidCloud,
   'fireworks-ai': paidCloud,
   'google-generative-ai': paidCloud,
+  'gpt-sovits': freeLocal,
   'groq': paidCloud,
   'index-tts-vllm': freeLocal,
   'kokoro-local': freeLocal,

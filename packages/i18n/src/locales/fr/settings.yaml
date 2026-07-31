@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: Support limité
         callout_indextts2_unavailable: Le support pour IndexTTS2 est actuellement indisponible. Veuillez utiliser IndexTTS.
+      gpt-sovits:
+        title: GPT-SoVITS (Local)
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: Pont connecté
+          ready: '{count} profil(s) vocal(aux) disponible(s).'
+          offline_title: Pont hors ligne
+          offline: Le pont TTS d'AIRI est injoignable. Démarrez-le, puis vérifiez que GPT-SoVITS api_v2 tourne sur 127.0.0.1:9880.
+          no_voices_title: Aucun profil vocal
+          no_voices: Le pont fonctionne mais n'a encore aucun profil vocal. Ajoutez-en un dans voices.yaml avec un extrait de référence de 3 à 10 secondes et sa transcription exacte.
+        fields:
+          field:
+            api-key:
+              placeholder: Non requis pour le pont local
+            text-lang:
+              label: Langue du texte
+              description: Langue du texte synthétisé. Utilisez auto pour les conversations multilingues.
+            strip-narration:
+              label: Supprimer la narration de jeu de rôle
+              description: Retire les *actions* et les [didascalies] avant la synthèse.
+            top-k:
+              label: Top K
+              description: Limite l'échantillonnage aux K jetons les plus probables. Plus bas est plus stable.
+            top-p:
+              label: Top P
+              description: Seuil d'échantillonnage nucléaire. Plus bas est plus stable.
+            temperature:
+              label: Température
+              description: Aléa de l'échantillonnage. Plus bas est plus régulier, plus haut est plus expressif.
+            text-split-method:
+              label: Méthode de découpage du texte
+              description: Comment le pont découpe les entrées longues. Auto laisse les fragments courts intacts.
+            repetition-penalty:
+              label: Pénalité de répétition
+              description: Décourage les jetons répétés. Augmentez-la si la voix bégaie ou boucle.
+            sample-steps:
+              label: Étapes d'échantillonnage
+              description: Étapes de diffusion pour les modèles v3/v4. Plus d'étapes est plus lent mais plus net.
+            seed:
+              label: Graine
+              description: Graine fixe pour un résultat reproductible. -1 en choisit une au hasard à chaque fois.
+        playground:
+          default-text: Bonjour ! Ceci est un test du pipeline GPT-SoVITS local.
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

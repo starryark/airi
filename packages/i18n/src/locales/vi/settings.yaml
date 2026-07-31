@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: Hỗ trợ hạn chế
         callout_indextts2_unavailable: IndexTTS2 hiện chưa hỗ trợ. Vui lòng dùng IndexTTS.
+      gpt-sovits:
+        title: GPT-SoVITS (Cục bộ)
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: Đã kết nối cầu nối
+          ready: 'Có {count} hồ sơ giọng nói khả dụng.'
+          offline_title: Cầu nối ngoại tuyến
+          offline: Không thể kết nối tới cầu nối TTS của AIRI. Hãy khởi động nó, rồi kiểm tra GPT-SoVITS api_v2 đang chạy trên 127.0.0.1:9880.
+          no_voices_title: Chưa có hồ sơ giọng nói
+          no_voices: Cầu nối đang chạy nhưng chưa có hồ sơ giọng nói nào. Hãy thêm một hồ sơ vào voices.yaml kèm đoạn tham chiếu 3-10 giây và bản chép lời chính xác.
+        fields:
+          field:
+            api-key:
+              placeholder: Không cần cho cầu nối cục bộ
+            text-lang:
+              label: Ngôn ngữ văn bản
+              description: Ngôn ngữ của văn bản được tổng hợp. Dùng auto cho hội thoại đa ngôn ngữ.
+            strip-narration:
+              label: Loại bỏ lời dẫn nhập vai
+              description: Xóa *hành động* và [chỉ dẫn sân khấu] trước khi tổng hợp.
+            top-k:
+              label: Top K
+              description: Giới hạn lấy mẫu trong K token khả dĩ nhất. Thấp hơn thì ổn định hơn.
+            top-p:
+              label: Top P
+              description: Ngưỡng lấy mẫu nucleus. Thấp hơn thì ổn định hơn.
+            temperature:
+              label: Nhiệt độ
+              description: Độ ngẫu nhiên khi lấy mẫu. Thấp thì nhất quán hơn, cao thì biểu cảm hơn.
+            text-split-method:
+              label: Phương pháp tách văn bản
+              description: Cách cầu nối tách văn bản dài. Auto giữ nguyên các đoạn hội thoại ngắn.
+            repetition-penalty:
+              label: Hình phạt lặp lại
+              description: Hạn chế token lặp lại. Tăng lên nếu giọng bị lắp hoặc lặp vòng.
+            sample-steps:
+              label: Số bước lấy mẫu
+              description: Số bước khuếch tán cho mô hình v3/v4. Nhiều bước thì chậm hơn nhưng sạch hơn.
+            seed:
+              label: Hạt giống
+              description: Hạt giống cố định để tái lập kết quả. -1 sẽ chọn ngẫu nhiên mỗi lần.
+        playground:
+          default-text: Xin chào! Đây là bài kiểm tra pipeline GPT-SoVITS cục bộ.
       azure-ai-foundry:
         description: Azure AI Foundry
         title: Azure AI Foundry

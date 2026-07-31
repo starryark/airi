@@ -1264,6 +1264,49 @@ pages:
         title: Bilibili / IndexTTS
         callout_indextts2_unavailable_title: 제한된 지원
         callout_indextts2_unavailable: 현재 IndexTTS2에 대한 지원이 제공되지 않습니다. IndexTTS를 사용해 주세요.
+      gpt-sovits:
+        title: GPT-SoVITS (로컬)
+        description: github.com/RVC-Boss/GPT-SoVITS
+        bridge:
+          ready_title: 브리지 연결됨
+          ready: '{count}개의 음성 프로필을 사용할 수 있습니다.'
+          offline_title: 브리지 오프라인
+          offline: AIRI TTS 브리지에 연결할 수 없습니다. 브리지를 실행한 뒤 GPT-SoVITS api_v2가 127.0.0.1:9880에서 동작 중인지 확인하세요.
+          no_voices_title: 음성 프로필 없음
+          no_voices: 브리지는 실행 중이지만 아직 음성 프로필이 없습니다. 3~10초 길이의 참조 음성과 정확한 대본을 voices.yaml에 추가하세요.
+        fields:
+          field:
+            api-key:
+              placeholder: 로컬 브리지에는 필요하지 않습니다
+            text-lang:
+              label: 텍스트 언어
+              description: 합성할 텍스트의 언어입니다. 다국어 대화에는 auto를 사용하세요.
+            strip-narration:
+              label: 롤플레이 나레이션 제거
+              description: 합성 전에 *행동*과 [지문]을 제거합니다.
+            top-k:
+              label: Top K
+              description: 확률이 높은 K개 토큰으로 샘플링을 제한합니다. 낮을수록 안정적입니다.
+            top-p:
+              label: Top P
+              description: 뉴클리어스 샘플링 임계값입니다. 낮을수록 안정적입니다.
+            temperature:
+              label: 온도
+              description: 샘플링 무작위성입니다. 낮으면 일관되고 높으면 표현이 풍부해집니다.
+            text-split-method:
+              label: 텍스트 분할 방식
+              description: 긴 입력을 나누는 방식입니다. auto는 짧은 대화 조각을 나누지 않습니다.
+            repetition-penalty:
+              label: 반복 패널티
+              description: 토큰 반복을 억제합니다. 음성이 끊기거나 반복되면 값을 높이세요.
+            sample-steps:
+              label: 샘플링 스텝
+              description: v3/v4 모델의 디퓨전 스텝 수입니다. 많을수록 느리지만 깨끗합니다.
+            seed:
+              label: 시드
+              description: 재현 가능한 출력을 위한 고정 시드입니다. -1은 매번 무작위로 선택합니다.
+        playground:
+          default-text: 안녕하세요! 로컬 GPT-SoVITS 파이프라인 테스트입니다.
       azure-ai-foundry:
         description: Azure AI 파운더리
         title: Azure AI 파운드리
