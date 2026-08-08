@@ -29,6 +29,7 @@
     "./directives/*": "./src/directives/*.ts",
     "./libs/inference/adapters/*": "./src/libs/inference/adapters/*.ts",
     "./libs/inference": "./src/libs/inference/index.ts",
+    "./libs/pinia": "./src/libs/pinia/index.ts",
     "./libs/*": "./src/libs/*.ts",
     "./libs": "./src/libs/index.ts",
     "./services/*": "./src/services/*.ts",
@@ -65,6 +66,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@better-fetch/fetch": "catalog:",
     "@date-fns/utc": "catalog:",
     "@formkit/auto-animate": "catalog:",
     "@huggingface/transformers": "catalog:",
@@ -137,6 +139,7 @@
     "node-vibrant": "catalog:",
     "ofetch": "catalog:",
     "pinia": "catalog:",
+    "pinia-plugin-synced": "catalog:",
     "posthog-js": "catalog:",
     "rehype-katex": "catalog:",
     "rehype-parse": "catalog:",

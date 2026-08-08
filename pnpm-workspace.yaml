@@ -40,6 +40,7 @@ catalog:
   '@better-auth/cli': ^1.4.21
   '@better-auth/drizzle-adapter': ^1.6.5
   '@better-auth/oauth-provider': 1.5.6
+  '@better-fetch/fetch': ^1.1.21
   '@capacitor/android': ^8.3.1
   '@capacitor/app': ^8.1.0
   '@capacitor/barcode-scanner': ^3.0.2
@@ -108,7 +109,7 @@ catalog:
   '@mediapipe/tasks-vision': ^0.10.34
   '@modelcontextprotocol/sdk': ^1.29.0
   '@moeru/eslint-config': 0.1.0-beta.19
-  '@moeru/eventa': 1.0.0-beta.8
+  '@moeru/eventa': 1.0.0-beta.14
   '@moeru/std': 0.1.0-beta.17
   '@moeru/three-mmd': 0.1.0-beta.7
   '@moeru/three-mmd-physics-ammo': 0.1.0-beta.7
@@ -197,10 +198,10 @@ catalog:
   '@unocss/reset': ^66.6.8
   '@valibot/to-json-schema': 1.0.0-rc.0
   '@velin-dev/core': ^0.4.0
-  '@vishot/cli': ^0.0.3
-  '@vishot/mockup-desktop-vue': ^0.0.3
-  '@vishot/renderer-browser': ^0.0.3
-  '@vishot/source-electron': ^0.0.3
+  '@vishot/cli': ^0.2.0
+  '@vishot/mockup-desktop-vue': ^0.2.0
+  '@vishot/renderer-browser': ^0.2.0
+  '@vishot/source-electron': ^0.2.0
   '@vitejs/plugin-vue': ^6.0.6
   '@vue-macros/volar': ^3.1.2
   '@vue/test-utils': ^2.4.6
@@ -320,6 +321,7 @@ catalog:
   pathe: ^2.0.3
   pg: ^8.20.0
   pinia: ^3.0.4
+  pinia-plugin-synced: 0.0.2
   pixi-filters: ^4.2.0
   pixi-live2d-display: ^0.4.0
   playwright: ^1.60.0

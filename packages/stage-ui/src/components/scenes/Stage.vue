@@ -27,8 +27,9 @@ import { useBroadcastChannel } from '@vueuse/core'
 // import { embed } from '@xsai/embed'
 import { generateSpeech } from '@xsai/generate-speech'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+
+import StageRenderError from './stage-render-error.vue'
 
 import { useSettingsLive2d } from '../../../../stage-ui-live2d/src/composables/live2d/live2d'
 import { useAnalytics } from '../../composables/use-analytics'
@@ -44,11 +45,12 @@ import { createStageTtsSession } from '../../libs/speech/tts-session'
 import { getSpeechBusContext, speechOutputGetPlaybackState } from '../../services/speech/bus'
 import { useAudioContext, useSpeakingStore } from '../../stores/audio'
 import { useBackgroundStore } from '../../stores/background'
-import { useChatOrchestratorStore } from '../../stores/chat'
+import { useChatStore } from '../../stores/chat'
 import { useLlmStreamingControlStore } from '../../stores/llm-streaming-control'
 import { useAiriCardStore } from '../../stores/modules'
 import { useSpeechStore } from '../../stores/modules/speech'
-import { useProvidersStore } from '../../stores/providers'
+import { useProviderConfigStore } from '../../stores/providers/config'
+import { useProviderStore } from '../../stores/providers/provider'
 import { useSettings } from '../../stores/settings'
 import { useSpeechOutputControlStore } from '../../stores/speech-output-control'
 import { useSpeechRuntimeStore } from '../../stores/speech-runtime'
@@ -88,19 +90,6 @@ const {
   live2dMaxFps,
   live2dRenderScale,
 } = storeToRefs(useSettingsLive2d())
-
-const { t } = useI18n()
-
-// Loader-authored reason the Live2D model failed to render, empty while healthy.
-// A failed load leaves the stage blank, so this is the only signal the user gets
-// for cases such as a Cubism 2 model in a build without the proprietary core.
-const live2dLoadError = ref('')
-
-// A new source means a new attempt: drop the previous failure so it cannot
-// outlive the model that produced it.
-watch([stageModelSelectedUrl, stageModelRenderer], () => {
-  live2dLoadError.value = ''
-})
 const {
   spinePremultipliedAlpha,
   spineDefaultMixDuration,
@@ -138,16 +127,34 @@ function onVRMInteract(target: VrmInteractionTarget) {
   vrmViewerRef.value?.setExpression(getVrmInteractionExpression(target), 1)
 }
 
-const { onBeforeMessageComposed, onBeforeSend, onTokenLiteral, onTokenSpecial, onStreamEnd, onAssistantResponseEnd } = useChatOrchestratorStore()
+const { onBeforeMessageComposed, onBeforeSend, onTokenLiteral, onTokenSpecial, onStreamEnd, onAssistantResponseEnd } = useChatStore()
 const chatHookCleanups: Array<() => void> = []
 // WORKAROUND: clear previous handlers on unmount to avoid duplicate calls when this component remounts.
 //             We keep per-hook disposers instead of wiping the global chat hooks to play nicely with
 //             cross-window broadcast wiring.
 
-const providersStore = useProvidersStore()
+const providersStore = useProviderStore()
+
+const providerStore = useProviderConfigStore()
 const live2dStore = useLive2dParams()
 const showStage = ref(true)
+const stageRenderError = shallowRef<Error>()
 const viewUpdateCleanups: Array<() => void> = []
+
+function handleStageRenderError(error: Error) {
+  stageRenderError.value = error
+}
+
+async function retryStageRenderer() {
+  stageRenderError.value = undefined
+  showStage.value = false
+  await nextTick()
+  showStage.value = true
+}
+
+watch([stageModelRenderer, stageModelSelected, stageModelSelectedUrl], () => {
+  stageRenderError.value = undefined
+})
 
 // Caption + Presentation broadcast channels
 type CaptionChannelEvent
@@ -163,9 +170,6 @@ const { post: postPresent } = useBroadcastChannel<PresentEvent, PresentEvent>({ 
 
 viewUpdateCleanups.push(live2dStore.onShouldUpdateView(async () => {
   showStage.value = false
-  // The scene remounts and reloads even when the source is unchanged, so the
-  // URL watcher above cannot cover this path.
-  live2dLoadError.value = ''
   await settingsStore.updateStageModel()
   setTimeout(() => {
     showStage.value = true
@@ -456,7 +460,7 @@ const speechPipeline = createSpeechPipeline<AudioBuffer>({
     if (!request.text && !request.special)
       return null
 
-    const providerConfig = providersStore.getProviderConfig(activeSpeechProvider.value)
+    const providerConfig = providerStore.getProviderConfig(activeSpeechProvider.value)
 
     // For OpenAI Compatible providers, always use provider config for model and voice
     // since these are manually configured in provider settings
@@ -1074,36 +1078,6 @@ defineExpose({
       }"
     />
 
-    <!--
-      Live2D Load Failure Layer.
-
-      Shares the stacking context with the background and the scene so it paints
-      over both, and stays click-through so a failure never traps the stage.
-    -->
-    <div
-      v-if="stageModelRenderer === 'live2d' && live2dLoadError"
-      :class="[
-        'pointer-events-none absolute left-0 top-0 z-10 h-full w-full',
-        'flex items-center justify-center',
-        'px-4 py-6',
-      ]"
-    >
-      <Callout
-        theme="orange"
-        :class="['pointer-events-auto w-96 max-w-full']"
-      >
-        <template #label>
-          <div :class="['flex items-center gap-1.5']">
-            <div i-solar:warning-circle-line-duotone />
-            <span>{{ t('settings.live2d.load-error.title') }}</span>
-          </div>
-        </template>
-        <p :class="['text-sm break-words']">
-          {{ live2dLoadError }}
-        </p>
-      </Callout>
-    </div>
-
     <div relative h-full w-full>
       <Live2DScene
         v-if="stageModelRenderer === 'live2d' && showStage"
@@ -1122,7 +1096,7 @@ defineExpose({
         :live2d-shadow-enabled="live2dShadowEnabled"
         :live2d-max-fps="live2dMaxFps"
         :live2d-render-scale="live2dRenderScale"
-        @error="live2dLoadError = $event"
+        @error="handleStageRenderError"
       />
       <ThreeScene
         v-if="stageModelRenderer === 'vrm' && showStage"
@@ -1201,6 +1175,14 @@ defineExpose({
           </Callout>
         </div>
       </div>
+
+      <StageRenderError
+        v-if="stageRenderError"
+        :error="stageRenderError"
+        renderer="Live2D"
+        :model-id="stageModelSelected"
+        @retry="retryStageRenderer"
+      />
     </div>
   </div>
 </template>
