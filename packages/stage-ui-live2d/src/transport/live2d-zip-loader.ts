@@ -31,11 +31,29 @@ export function basename(path: string): string {
   return path.split(/[\\/]/).pop()!
 }
 
+/** Normalize resolved Live2D resource paths back to decoded archive paths. */
+function normalizeLive2DArchivePath(path: string): string {
+  try {
+    return decodeURI(path)
+  }
+  catch {
+    return path
+  }
+}
+
+function useArchivePathResolution(settings: ModelSettings): ModelSettings {
+  const resolveURL = settings.resolveURL.bind(settings)
+  settings.resolveURL = path => normalizeLive2DArchivePath(resolveURL(path))
+  return settings
+}
+
 function createModelSettings(json: JSONObject, url: string): ModelSettings {
   if (!configuredRuntime)
     throw new Error('Live2D runtime has not been configured.')
   const selected = selectLive2DSettings([{ path: url, json }])
-  return selected.loader.createSettings(configuredRuntime, selected.loader.sanitizeSettings(json), url)
+  return useArchivePathResolution(
+    selected.loader.createSettings(configuredRuntime, selected.loader.sanitizeSettings(json), url),
+  )
 }
 
 async function selectZipSettings(reader: JSZip) {
@@ -59,29 +77,11 @@ async function selectFileSettings(files: File[]) {
   return { ...selected, file: candidates.find(candidate => candidate.path === selected.path)!.file }
 }
 
-/**
- * Model metadata AIRI attaches to upstream `ModelSettings`.
- *
- * Both loader paths must produce this identical shape: consumers snapshot
- * expression parameter defaults from `_expFiles` at load time, and the second
- * and every later load of a model is served from the OPFS cache through
- * `FileLoader`, never `ZipLoader`.
- */
 interface Live2DModelMetadata {
-  /** Parsed `.cdi3.json`, absent for Cubism 2 archives and Cubism 3+ archives that ship none. */
   _cdiData?: unknown
-  /**
-   * Every readable `.exp.json` / `.exp3.json` in the model, each named by its
-   * extension-stripped basename. Files that fail to parse are left out rather
-   * than failing the load; see {@link collectMetadata}.
-   */
   _expFiles?: Array<{ name: string, fileName: string, data: unknown }>
 }
 
-/**
- * One metadata candidate, decoupled from the loader that produced it: `ZipLoader`
- * reads through JSZip while `FileLoader` reads OPFS-restored `File`s.
- */
 interface MetadataSource {
   path: string
   readText: () => Promise<string>
@@ -100,13 +100,6 @@ function expressionNameOf(path: string): string {
   return basename(path).replace(/\.exp3?\.json$/i, '')
 }
 
-/**
- * Reads one metadata payload, reporting an unparseable file as "no metadata
- * here" instead of throwing.
- *
- * Returns a wrapper rather than the value itself so a legitimately parsed
- * `null` stays distinguishable from a failed read.
- */
 async function readOptionalJSON(source: MetadataSource): Promise<{ data: unknown } | undefined> {
   try {
     return { data: JSON.parse(await source.readText()) }
@@ -117,16 +110,6 @@ async function readOptionalJSON(source: MetadataSource): Promise<{ data: unknown
   }
 }
 
-/**
- * Collects the optional `.cdi3.json` and expression payloads AIRI attaches to
- * `ModelSettings`, for whichever loader supplied the sources.
- *
- * Parse failures are per-file and non-fatal. This metadata decorates a model
- * that its settings file and render assets already describe completely, and the
- * expression initializer skips individual expressions it cannot use, so letting
- * one malformed or stray sidecar reject `createSettings` would turn an optional
- * problem into a failed import of the entire model.
- */
 async function collectMetadata(sources: MetadataSource[]): Promise<Live2DModelMetadata> {
   const metadata: Live2DModelMetadata = {}
 
@@ -148,9 +131,7 @@ async function collectMetadata(sources: MetadataSource[]): Promise<Live2DModelMe
   return metadata
 }
 
-/**
- * Installs AIRI's ZIP and directory policies on the selected runtime exactly once.
- */
+/** Installs AIRI's ZIP and directory policies on the selected runtime exactly once. */
 export function configureLive2DLoaders(runtime: Live2DRuntime): void {
   if (configuredRuntime === runtime)
     return
@@ -163,9 +144,6 @@ export function configureLive2DLoaders(runtime: Live2DRuntime): void {
     const filePaths = Object.keys(reader.files)
     const selected = await selectZipSettings(reader)
     const settings = createModelSettings(selected.json, selected.path)
-    // Raw ZIP entries still include macOS AppleDouble sidecars, which carry a
-    // binary payload under a JSON-looking name. OPFS strips them before the
-    // File[] path below ever sees one.
     Object.assign(settings, await collectMetadata(
       filePaths
         .filter(path => !shouldIgnoreLive2DArchiveEntry(path))
