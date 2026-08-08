@@ -1,12 +1,10 @@
-/// <reference types="@proj-airi/unplugin-live2d-sdk/types" />
-
 import type * as Live2DDisplay from 'pixi-live2d-display'
 import type { InternalModel, Live2DFactoryOptions, Live2DModel } from 'pixi-live2d-display'
 
-import { errorMessageFrom } from '@moeru/std'
 import { cubism2Core } from 'virtual:live2d-sdk/cores'
 
 import { loaderForModel } from '../generations/loader'
+import { errorMessageFrom } from './error-message'
 
 declare global {
   interface Window {
