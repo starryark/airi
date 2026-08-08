@@ -30,13 +30,12 @@ const props = withDefaults(defineProps<{
 
 const emits = defineEmits<{
   /**
-   * Human-readable reason the scene failed to come up, relayed verbatim from
-   * whichever child failed: `Model.vue` for a model that cannot load, or
-   * `Canvas.vue` for a Live2D runtime that cannot load at all. Consumers are
-   * expected to surface it: a Cubism 2 model in a build without the proprietary
-   * core fails here and produces no other visible signal than a blank stage.
+   * Error that prevented the Live2D scene from loading or rendering. Child
+   * loaders keep their actionable human-readable text, while this component
+   * normalizes the public event to Error so current stage error/retry UI can
+   * consume Cubism 2 and Cubism 4 failures through one contract.
    */
-  (e: 'error', message: string): void
+  (e: 'error', error: Error): void
 }>()
 
 const componentState = defineModel<'pending' | 'loading' | 'mounted'>('state', { default: 'pending' })
@@ -90,9 +89,13 @@ onUnmounted(() => {
 // "will never load".
 const canvasFailed = ref(false)
 
-function handleCanvasError(message: string) {
+function toError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error))
+}
+
+function handleCanvasError(error: unknown) {
   canvasFailed.value = true
-  emits('error', message)
+  emits('error', toError(error))
 }
 
 watch([componentStateModel, componentStateCanvas, canvasFailed], () => {
@@ -151,7 +154,7 @@ defineExpose({
         :live2d-force-auto-blink-enabled="live2dForceAutoBlinkEnabled"
         :live2d-expression-enabled="live2dExpressionEnabled"
         :live2d-shadow-enabled="live2dShadowEnabled"
-        @error="emits('error', $event)"
+        @error="emits('error', toError($event))"
       />
     </Live2DCanvas>
   </Screen>
