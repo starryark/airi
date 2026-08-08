@@ -19,12 +19,8 @@ const props = withDefaults(defineProps<{
 
 const emits = defineEmits<{
   /**
-   * Human-readable reason the Pixi stage could not be brought up — in practice a
-   * Cubism core script that 404s or a runtime bundle that fails to evaluate.
-   *
-   * Nothing downstream can report this: the default slot only renders once the
-   * canvas exists, so `Model.vue` never mounts and its own `error` emit — the
-   * one the stage and preview overlays listen to — never runs.
+   * Human-readable reason the Pixi stage could not be brought up or stopped
+   * rendering. The parent normalizes this public scene event to Error.
    */
   (e: 'error', message: string): void
 }>()
@@ -55,6 +51,7 @@ function installRenderGuard(app: Application) {
     catch (error) {
       console.error('[Live2D] Pixi render error.', error)
       app.ticker.stop()
+      emits('error', errorMessageFrom(error) ?? 'Live2D rendering failed.')
     }
   }
 
@@ -164,6 +161,7 @@ async function captureFrame() {
     }
     catch (error) {
       console.error('[Live2D] Pixi render error during capture.', error)
+      emits('error', errorMessageFrom(error) ?? 'Live2D frame capture failed.')
       return resolve(null)
     }
 
