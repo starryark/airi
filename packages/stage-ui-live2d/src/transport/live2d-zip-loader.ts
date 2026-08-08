@@ -4,10 +4,9 @@ import type { Live2DRuntime } from '../utils/live2d-runtime'
 
 import JSZip from 'jszip'
 
-import { errorMessageFrom } from '@moeru/std'
-
 import { live2DGenerationLoaders, selectLive2DSettings } from '../generations/loader'
 import { decodeZipFileName } from '../utils/decode-zip-filename'
+import { errorMessageFrom } from '../utils/error-message'
 
 let configuredRuntime: Live2DRuntime | undefined
 
