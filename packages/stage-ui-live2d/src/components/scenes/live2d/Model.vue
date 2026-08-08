@@ -4,7 +4,6 @@ import type { Live2DModel as PixiLive2DModel } from 'pixi-live2d-display'
 
 import type { PixiLive2DInternalModel } from '../../../composables/live2d'
 
-import { errorMessageFrom } from '@moeru/std'
 import { listenBeatSyncBeatSignal } from '@proj-airi/stage-shared/beat-sync'
 import { useTheme } from '@proj-airi/ui'
 import { until } from '@vueuse/core'
@@ -30,6 +29,7 @@ import {
 import { useFitModel } from '../../../composables/live2d/fit-model'
 import { Emotion, EmotionNeutralMotionName } from '../../../constants/emotions'
 import { useL2dViewControl, useLive2dParams } from '../../../stores'
+import { errorMessageFrom } from '../../../utils/error-message'
 import { loadLive2DRuntime, setupLive2DModel } from '../../../utils/live2d-runtime'
 
 const props = withDefaults(defineProps<{
@@ -557,7 +557,6 @@ function updateDropShadowFilterLoop() {
     dropShadowAnimationId.value = 0
     return
   }
-
   dropShadowAnimationId.value = requestAnimationFrame(updateDropShadowFilterLoop)
 }
 
