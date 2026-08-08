@@ -53,7 +53,7 @@ describe('cubism 2 Core SDK policy', () => {
     process.env.AIRI_CUBISM2_CORE_URL = 'https://example.com/unverified.js'
     delete process.env.AIRI_CUBISM2_CORE_URL_SHA256
 
-    const options = createCubism2CoreOptions({ distribution: 'development-only' })
+    const options = createCubism2CoreOptions({ distribution: 'none' })
 
     expect(options.sources).toHaveLength(1)
     expect(options.sources?.[0]).toMatchObject({ path: expect.any(String), optional: true })
