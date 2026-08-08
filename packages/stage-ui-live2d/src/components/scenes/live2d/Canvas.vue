@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { errorMessageFrom } from '@moeru/std'
 import { Application } from '@pixi/app'
 import { extensions } from '@pixi/extensions'
 import { Ticker, TickerPlugin } from '@pixi/ticker'
 import { onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
 
+import { errorMessageFrom } from '../../../utils/error-message'
 import { loadLive2DRuntime } from '../../../utils/live2d-runtime'
 
 const props = withDefaults(defineProps<{
