@@ -20,10 +20,11 @@ import VueMacros from 'vue-macros/vite'
 import VueRouter from 'vue-router/vite'
 
 import { tryCatch } from '@moeru/std'
-import { createCubism2CoreOptions } from '@proj-airi/stage-ui-live2d/vite'
 import { Download } from '@proj-airi/unplugin-fetch/vite'
 import { Cubism2Core, DownloadLive2DSDK } from '@proj-airi/unplugin-live2d-sdk/vite'
 import { defineConfig } from 'vite'
+
+import { createCubism2CoreOptions } from '../../packages/stage-ui-live2d/src/vite'
 
 // import { isEnvTruthy } from '@proj-airi/stage-shared'
 function isEnvTruthy(value: string | undefined | null): boolean {
