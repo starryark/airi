@@ -1,8 +1,20 @@
-import type { Cubism2CoreOptions, Cubism2Source } from '@proj-airi/unplugin-live2d-sdk/vite'
-
 import process from 'node:process'
 
 import { resolve } from 'node:path'
+
+interface Cubism2Source {
+  path?: string
+  url?: string
+  sha256?: string
+  optional?: boolean
+}
+
+export interface Cubism2CoreOptions {
+  sources: Cubism2Source[]
+  cacheDir: string
+  timeout: number
+  distribution: 'bundle' | 'external' | 'none'
+}
 
 const mirroredCore = {
   url: 'https://cdn.jsdelivr.net/gh/dylanNew/live2d@fd9fd400845e9a00bb194fdac0b6635c753a1e8a/webgl/Live2D/lib/live2d.min.js',
@@ -16,9 +28,8 @@ export interface CreateCubism2CoreOptions {
 
 /**
  * Builds AIRI's source policy for the SDK-owned Cubism 2 Core provisioner.
- *
- * This helper only expresses precedence and integrity policy. The upstream
- * plugin owns filesystem access, downloads, caching, serving, and emission.
+ * This helper only expresses precedence and integrity policy; the plugin owns
+ * filesystem access, downloads, caching, serving, and emission.
  */
 export function createCubism2CoreOptions(options: CreateCubism2CoreOptions): Cubism2CoreOptions {
   const sources: Cubism2Source[] = []
