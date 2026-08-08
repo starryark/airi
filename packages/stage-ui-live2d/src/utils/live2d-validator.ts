@@ -2,10 +2,9 @@ import type { JSONObject } from 'pixi-live2d-display'
 
 import JSZip from 'jszip'
 
-import { errorMessageFrom } from '@moeru/std'
-
 import { selectLive2DSettings } from '../generations/loader'
 import { decodeZipFileName } from './decode-zip-filename'
+import { errorMessageFrom } from './error-message'
 import { isCubism2RuntimeConfigured } from './live2d-runtime'
 import { isSettingsFile } from './live2d-zip-loader'
 
