@@ -68,7 +68,6 @@ export class OPFSCache {
         const relativePath = pathPrefix + file.name
         if (file.name === '__meta.json' || shouldIgnoreLive2DArchiveEntry(relativePath))
           continue
-        // live2d-display expects this
         Object.defineProperty(file, 'webkitRelativePath', {
           value: relativePath,
         })
@@ -97,13 +96,9 @@ export class OPFSCache {
 
   private static async clearDirectory(dirHandle: FileSystemDirectoryHandle): Promise<void> {
     const entryNames: string[] = []
-
-    // OPFS writes mirror the source zip exactly, so stale files from a previous
-    // failed or superseded save must be removed before writing fresh entries.
     for await (const entry of dirHandle.values()) {
       entryNames.push(entry.name)
     }
-
     await Promise.all(entryNames.map(name => dirHandle.removeEntry(name, { recursive: true })))
   }
 
@@ -140,11 +135,6 @@ export class OPFSCache {
 
       const meta = await OPFSCache.readMeta(dirHandle)
       if (meta?.version !== live2DOpfsCacheVersion) {
-        // NOTICE: Rebuild caches created before OPFS stored the full zip directory.
-        // Older caches may contain a reconstructed model3.json instead of the
-        // original archive settings file.
-        // Source/context: OPFSCache.saveMiddleware settings reconstruction.
-        // Removal condition: old OPFS caches no longer need migration support.
         // eslint-disable-next-line no-console
         console.debug(`[OPFS] Cache mismatch for ${key}, schema version changed`)
         await root.removeEntry(dirHandle.name, { recursive: true })
@@ -153,19 +143,15 @@ export class OPFSCache {
 
       const shouldValidateSourceUrl = !sourceUrl.startsWith('blob:')
       if (shouldValidateSourceUrl && meta.sourceUrl && meta.sourceUrl !== sourceUrl) {
-        // NOTICE: Skip cache when the requested URL changes while the key stays the same.
-        // This avoids serving a stale model when ids are reused or props are out of sync.
         // eslint-disable-next-line no-console
         console.debug(`[OPFS] Cache mismatch for ${key}, source url changed`)
-        await root.removeEntry(dirHandle.name, { recursive: true }) // actually invalidates cache
+        await root.removeEntry(dirHandle.name, { recursive: true })
         return null
       }
 
       const files = await OPFSCache.readDirectoryRecursive(dirHandle, '')
-
-      if (files.length > 0) {
+      if (files.length > 0)
         return files
-      }
     }
     catch {
       // Cache Miss
@@ -173,20 +159,6 @@ export class OPFSCache {
     return null
   }
 
-  /**
-   * Persists every non-directory entry from a Live2D zip into OPFS.
-   *
-   * Use when:
-   * - Caching a loaded Live2D zip for later FileLoader replay
-   * - Preserving the original model3.json and archive paths exactly
-   *
-   * Expects:
-   * - `zipBlob` is the original archive blob fetched by checkMiddleware
-   * - ZIP entry paths are already the physical paths to persist
-   *
-   * Returns:
-   * - A completed OPFS directory write, or logs and returns on cache write failure
-   */
   static async save(key: string, zipBlob: Blob, sourceUrl?: string): Promise<void> {
     try {
       const zip = await JSZip.loadAsync(await zipBlob.arrayBuffer(), { decodeFileName: decodeZipFileName })
@@ -218,13 +190,11 @@ export class OPFSCache {
     }
   }
 
-  // Runs before ZipLoader to check if the file is already cached
   static checkMiddleware: Middleware<OPFSContext> = async (context, next) => {
     const source = context.source
     let key: string | undefined
     let blobUrl: string | undefined
 
-    // In Model.vue, we pass {id, url} to the loader, extract them here
     if (
       typeof source === 'object'
       && source !== null
@@ -238,7 +208,6 @@ export class OPFSCache {
       return next()
     }
 
-    // check if url is blob or zip, pass through if not
     if (!key || !blobUrl || (!blobUrl.startsWith('blob:') && !blobUrl.endsWith('.zip'))) {
       context.source = blobUrl
       return next()
@@ -247,12 +216,10 @@ export class OPFSCache {
     const files = await OPFSCache.get(key, blobUrl)
 
     if (files) {
-      // cache hit
       context.source = files
       return next()
     }
 
-    // cache miss
     // eslint-disable-next-line no-console
     console.debug(`[OPFS] Cache miss for ${key}`)
     context.opfsKey = key
@@ -260,7 +227,12 @@ export class OPFSCache {
 
     try {
       const res = await fetch(blobUrl)
-      const blob = await res.blob()
+      // Electron/ASAR-backed file responses can fail in Response.blob(); reading
+      // bytes first preserves upstream's bundled-model compatibility while still
+      // retaining the response content type for ordinary blob URLs.
+      const blob = new Blob([await res.arrayBuffer()], {
+        type: res.headers.get('content-type') ?? '',
+      })
       const fileName = `${key}.zip`
       context.opfsZipBlob = blob
       context.source = [new File([blob], fileName)]
@@ -273,7 +245,6 @@ export class OPFSCache {
     return next()
   }
 
-  // Runs after ZipLoader to cache the files
   static saveMiddleware: Middleware<OPFSContext> = async (context, next) => {
     if (!context.opfsKey || !context.opfsZipBlob) {
       return next()
