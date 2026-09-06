@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   generate:
+    # Scheduled sponsor updates require the upstream repository's credentials.
+    if: ${{ github.event_name != 'schedule' || github.repository == 'moeru-ai/airi' }}
     runs-on: ubuntu-latest
     env:
       SPONSORKIT_PATREON_TOKEN: ${{ secrets.SPONSORKIT_PATREON_TOKEN }}

@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   sync-transitions-from-crowdin:
+    # Scheduled translation sync requires the upstream repository's credentials.
+    if: ${{ github.event_name != 'schedule' || github.repository == 'moeru-ai/airi' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

@@ -45,6 +45,8 @@ on:
 
 jobs:
   build:
+    # Scheduled releases require the upstream repository's signing credentials.
+    if: ${{ github.event_name != 'schedule' || github.repository == 'moeru-ai/airi' }}
     name: Build
     continue-on-error: ${{ matrix.skip }} # WORKAROUND: Skipping subsequent steps without failing the whole workflow
     env:
